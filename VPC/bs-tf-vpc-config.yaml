@@ -1,0 +1,190 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: terraform-vpc
+  title: Terraform Template for AWS VPC
+  description: Create an AWS VPC ...
+spec:
+  owner: mythun-git
+  type: service
+
+  # These parameters are used to generate the input form in the frontend, and are
+  # used to gather input data for the execution of the template.
+  parameters:
+    - title: Enter the resource name
+      required:
+        - name
+        - region
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Unique name of the resource
+        region:
+          title: AWS Region
+          type: string
+          description: The AWS region where the VPC will be deployed
+          enum:
+            - us-east-1
+            - us-east-2
+            - us-west-1
+            - us-west-2
+            
+    - title: Fill AWS VPC Details
+      required:
+        - vpcName
+        - vpcCidrBlock
+      properties:
+        vpcName:
+          title: AWS VPC Name
+          type: string
+          description: Enter the Name for the AWS VPC
+          # ui:autofocus: true
+          # ui:options:
+          #   rows: 5
+        vpcCidrBlock:
+          title: AWS VPC CIDR Block
+          type: string
+          description: Enter the AWS VPC CIDR Block
+          # enum:
+          #   - us-east-1
+          #   - us-east-2
+          #   - us-west-1
+          #   - us-west-2
+            
+    - title: Fill AWS Subnet Details
+      required:
+        - publicSubnetCidrBlock
+        - publicSubnetZone
+        - publicSubnetName
+        - privateSubnetCidrBlock
+        - privateSubnetZone
+        - privateSubnetName
+      properties:
+        publicSubnetName:
+          title: AWS Public Subnet Name
+          type: string
+          description: Enter the Name for the AWS Public Subnet
+        publicSubnetCidrBlock:
+          title: AWS Public Subnet CIDR Block
+          type: string
+          description: Enter the AWS Public Subnet CIDR Block
+        publicSubnetZone:
+          title: AWS Public Subnet Zone
+          type: string
+          description: Select the AWS Public Subnet
+          enum:
+            - us-east-1
+            - us-east-2
+            - us-west-1
+            - us-west-2
+        privateSubnetName:
+          title: AWS Private Subnet Name
+          type: string
+          description: Enter the Name for the AWS Private Subnet
+        privateSubnetCidrBlock:
+          title: AWS Private Subnet CIDR Block
+          type: string
+          description: Enter the AWS Private Subnet CIDR Block
+        privateSubnetZone:
+          title: AWS Private Subnet Zone
+          type: string
+          description: Select the AWS Private Subnet
+          enum:
+            - us-east-1
+            - us-east-2
+            - us-west-1
+            - us-west-2
+
+    - title: Fill AWS Details
+      required:
+        - vpcInternetGatewayName
+        - vpcRouteCidrBlock
+        - vpcRouteIpv6CidrBlock
+        - vpcPublicRouteTableName
+        - vpcSGName
+      properties:
+        vpcInternetGatewayName:
+          title: AWS Internet Gateway Name
+          type: string
+          description: Enter the Name for the AWS Internet Gateway
+        vpcRouteCidrBlock:
+          title: AWS Route Table CIDR Block
+          type: string
+          description: Enter the AWS Route Table CIDR Block
+        vpcRouteIpv6CidrBlock:
+          title: AWS Route Table IPV6 CIDR Block
+          type: string
+          description: Enter the AWS Route Table IPV6 CIDR Block
+        vpcPublicRouteTableName:
+          title: AWS Public Route Table Name
+          type: string
+          description: Enter the AWS Public Route Table Name
+        vpcSGName:
+          title: AWS Secuirty Group Name
+          type: string
+          description: Enter the AWS Secuirty Group Name
+
+    - title: Choose a location
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: Repository Location
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - github.com
+
+  # These steps are executed in the scaffolder backend, using data that we gathered
+  # via the parameters above.
+  steps:
+    # Each step executes an action, in this case one templates files into the working directory.
+    - id: fetch-base
+      name: Fetch Base
+      action: fetch:template
+      input:
+        url: ./content
+        values:
+          name: ${{ parameters.name }}
+          region: ${{ parameters.region }}
+          vpcName: ${{ parameters.vpcName }}
+          vpcCidrBlock: ${{ parameters.vpcCidrBlock }}
+          publicSubnetCidrBlock: ${{ parameters.publicSubnetCidrBlock }}
+          publicSubnetZone: ${{ parameters.publicSubnetZone }}
+          publicSubnetName: ${{ parameters.publicSubnetName }}
+          privateSubnetCidrBlock: ${{ parameters.privateSubnetCidrBlock }}
+          privateSubnetZone: ${{ parameters.privateSubnetZone }}
+          privateSubnetName: ${{ parameters.privateSubnetName }}
+          vpcInternetGatewayName: ${{ parameters.vpcInternetGatewayName }}
+          vpcRouteCidrBlock: ${{ parameters.vpcRouteCidrBlock }}
+          vpcRouteIpv6CidrBlock: ${{ parameters.vpcRouteIpv6CidrBlock }}
+          vpcPublicRouteTableName: ${{ parameters.vpcPublicRouteTableName }}
+          vpcSGName: ${{ parameters.vpcSGName }}
+
+    # This step publishes the contents of the working directory to GitHub.
+    - id: publish
+      name: Publish
+      action: publish:github
+      input:
+        allowedHosts: ['github.com']
+        description: This is ${{ parameters.name }}
+        repoUrl: ${{ parameters.repoUrl }}
+
+      # The final step is to register our new component in the catalog.
+    - id: register
+      name: Register
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
+        catalogInfoPath: '/catalog-info.yaml'
+
+  # Outputs are displayed to the user after a successful execution of the template.
+  output:
+    links:
+      - title: Repository
+        url: ${{ steps['publish'].output.remoteUrl }}
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps['register'].output.entityRef }}
