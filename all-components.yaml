@@ -1,15 +1,6 @@
-//apiVersion: backstage.io/v1alpha1
-//kind: Location
-//metadata:
-  //name: terraform-components
-  //description: A collection of all Backstage example components
-apiVersion: scaffolder.backstage.io/v1beta3
-kind: Template
+apiVersion: backstage.io/v1alpha1
+kind: Location
 metadata:
-  name: terraform-vpc
-  title: Terraform Template for AWS VPC
-  description: Create an AWS VPC ...
+  name: terraform-components
+  description: A collection of all Backstage example components
 
-spec:
-  targets:
-    - ./TEAM/team-dhruv.yaml
