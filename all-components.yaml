@@ -10,9 +10,10 @@ spec:
     - ./PG/bs-tf-pg-config.yaml
     - ./VPC/bs-tf-vpc-config.yaml
     - ./DCF/bs-tf-dcf-config.yaml
-    - ./AVIATRIX/TRANSIT_GATEWAY/bs-tf-gateway.yaml
-    - ./AVIATRIX/SPOKE_GATEWAY/bs-tf-spokegw-config.yaml
+    #- ./AVIATRIX/TRANSIT_GATEWAY/bs-tf-gateway.yaml
+    #- ./AVIATRIX/SPOKE_GATEWAY/bs-ts-spokegw-config.yaml
     - ./AVIATRIX/SMARTGROUP/bs-tf-smartgroup-config.yaml
-    - ./MANAGEMENT_VPC/bs-tf-managementvpc-config.yaml
+    - ./MANAGEMENT_VPC/bc-tf-managementvpc-config.yaml
     - ./AVIATRIX/COPILOT/bs-tf-aviatrix-copilot-config.yaml
     - ./AVIATRIX/CONTROLLER/bs-tf-aviatrix-controller-config.yaml
+    #- ./AVIATRIX/GATEWAY/bss-tf-gateway.yaml
